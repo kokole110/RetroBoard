@@ -1,0 +1,29 @@
+.card-footer a, .card-footer span {
+	margin-left: 5px;
+}
+
+.card-footer {
+	text-align: right;
+}
+
+.card {
+	padding: 10px;
+	margin-bottom: 10px;
+	color: white;
+	border-radius: 5px;
+}
+div[contenteditable] {
+	padding: 5px;
+	outline: none;
+	min-height: 30px; 
+	background-color: rgba(0, 0, 0, 0.3);
+	border-radius: 5px;
+	cursor: pointer;
+}
+div[contenteditable]:focus {
+	cursor: text;
+}
+
+.card a {
+	color: white;
+}

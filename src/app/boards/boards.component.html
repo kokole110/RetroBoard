@@ -1,0 +1,16 @@
+<div class="row">
+	<div class="col-xs-12">
+		<button class="btn btn-success" (click)="onNewBoard()">New Board</button>
+	</div>
+</div>
+<hr>
+
+	<div class="row">
+		<app-board-item 
+			*ngFor="let boardEl of boards; let i = index" 
+			[board]="boardEl" 
+			[index]="i"
+			[ngClass]="{'col-xs-12': true, 'col-sm-6': true, 'col-md-4': true, 'margin-bottom': true}"
+		>			
+		</app-board-item>
+	</div>

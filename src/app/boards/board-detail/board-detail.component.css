@@ -1,0 +1,31 @@
+.card-header {
+	display: flex;
+}
+.card-header-info {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+form .form-input, form .form-buttons {
+	display: flex;
+	flex-direction: row;
+}
+form .form-buttons {
+	justify-content: center;
+}
+
+form .form-buttons button {
+	margin-right: 20px;
+}
+
+
+
+
+

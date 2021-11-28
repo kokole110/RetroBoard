@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "retroboard-3862e": {
+      "hosting": {
+        "retroBoard": [
+          "retroboard-3862e"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "retroboard-3862e"
+  }
+}

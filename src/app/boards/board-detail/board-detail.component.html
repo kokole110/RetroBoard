@@ -1,0 +1,59 @@
+<div class="row card-header">
+	<div class="col-xs-4 card-header-info ">
+		<h3>{{ board.name }}</h3>
+		<p>{{ board.description }}</p>
+	</div>
+	<div class="col-xs-4 col-sm-2 card-header-info" *ngIf="!addColumnMode">
+		<button type="button" class="btn btn-success" (click)="onAddColumn()">Add column</button>
+	</div>
+	<div class="col-xs-8 col-sm-6 card-header " *ngIf="addColumnMode">
+		<form #addColumnForm="ngForm" (ngSubmit)="onSubmit(addColumnForm)" >
+			<div class="form-group form-input">
+				<input type="text"
+          id="colName"
+          class="form-control"
+          ngModel
+          name="colName"
+          placeholder="Enter column name here" 
+          required>
+			</div>
+			<div class="form-group form-input pick-color">
+				<label for="colorPicker">Choose a color:</label>
+				 <input 
+				 	type="button" 
+				 	[style.background]="this.colorPickService.color" 
+				 	[(colorPicker)]="this.colorPickService.color"
+				 	class="form-control"
+				 	name="colorPicker"
+				 	id="colorPicker" 
+				 	ngModel />
+			</div>
+			<div class="form-buttons">
+				<button
+          class="btn btn-success"
+          type="submit"
+          [disabled]="!addColumnForm.valid"
+        >Submit
+        </button>
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="onCancel()"
+        >Cancel
+        </button>
+			</div>
+		</form>		
+	</div>	
+</div>
+	
+<hr>
+<div class="row" style="display: flex; flex-wrap: wrap;">
+	<app-board-column
+		*ngFor="let columnEl of board.columns; let i = index"
+		[column]="columnEl"
+		[index]="i"
+		[ngClass]="{'col-xs-12': true, 'col-sm-6': true, 'col-md-4': true, 'margin-bottom': true}"
+		(deleteColEvent)="deleteColumn($event)"
+	>
+	</app-board-column>
+</div>
