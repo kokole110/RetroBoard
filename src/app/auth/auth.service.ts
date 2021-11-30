@@ -25,6 +25,7 @@ export interface AuthResponseData {
 })
 export class AuthService {
 
+  userName: string = '';
   user = new BehaviorSubject<User | null>(null);
   private tokenExpirationTimer: any;
   private db = getDatabase();
@@ -86,6 +87,7 @@ export class AuthService {
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
+      this.userName = loadedUser.name;
       const expirationDuration = new Date(userData._tokenExpDate).getTime() - new Date().getTime();
       this.autoLogout(expirationDuration);
     }
@@ -112,6 +114,7 @@ export class AuthService {
     const expDate = new Date(new Date().getTime() + expiresIn*1000)
     const user = new User(email, userId, token, expDate, name)
     this.user.next(user);
+    this.userName = user.name;
     this.autoLogout(expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
 
@@ -147,6 +150,7 @@ export class AuthService {
       getDoc(docRef).then(userDoc => {
         if (userDoc.exists()) {
           console.log("Document data:", userDoc.data().name);
+          this.userName = userDoc.data().name;
           const user = new User(email, userId, token, expDate, userDoc.data().name)
           this.user.next(user);
           this.autoLogout(expiresIn * 1000);

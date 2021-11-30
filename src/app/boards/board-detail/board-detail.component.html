@@ -1,3 +1,8 @@
+<div class="row">
+	<div class="col-xs-12 delete-btn">
+		<button type="button" class="btn btn-danger" (click)="onDeleteBoard()">Delete board</button>
+	</div>	
+</div>
 <div class="row card-header">
 	<div class="col-xs-4 card-header-info ">
 		<h3>{{ board.name }}</h3>
@@ -6,7 +11,7 @@
 	<div class="col-xs-4 col-sm-2 card-header-info" *ngIf="!addColumnMode">
 		<button type="button" class="btn btn-success" (click)="onAddColumn()">Add column</button>
 	</div>
-	<div class="col-xs-8 col-sm-6 card-header " *ngIf="addColumnMode">
+	<div class="col-xs-7 col-sm-6 card-header " *ngIf="addColumnMode">
 		<form #addColumnForm="ngForm" (ngSubmit)="onSubmit(addColumnForm)" >
 			<div class="form-group form-input">
 				<input type="text"
@@ -43,7 +48,7 @@
         </button>
 			</div>
 		</form>		
-	</div>	
+	</div>
 </div>
 	
 <hr>
@@ -53,7 +58,7 @@
 		[column]="columnEl"
 		[index]="i"
 		[ngClass]="{'col-xs-12': true, 'col-sm-6': true, 'col-md-4': true, 'margin-bottom': true}"
-		(deleteColEvent)="deleteColumn($event)"
+		
 	>
 	</app-board-column>
 </div>

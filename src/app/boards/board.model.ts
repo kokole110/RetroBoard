@@ -5,5 +5,6 @@ export class Board {
 		public name: string, 
 		public description: string,
 		public date: Date,
-		public columns: Column[]) {}
+		public columns: Column[],
+		public boardId: string) {}
 }

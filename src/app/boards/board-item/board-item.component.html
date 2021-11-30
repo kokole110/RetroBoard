@@ -3,13 +3,14 @@
 	class="list-group-item clearfix"
 	[routerLink]="[index]"
 	routerLinkActive = 'active'
+	(click)="onFetchColumns()"
 >
 	
 		<h4 class="list-group-item-heading">{{ board.name }}</h4>
 		<p class="list-group-item-text">{{ board.description}}</p>
 		<div>
 			<p class="pull-left list-group-item-text">{{ board.date | date}}</p>
-			<p class="pull-right list-group-item-text">3 cards</p>
+			<p class="pull-right list-group-item-text">{{ cardsNum }} cards</p>
 		</div>
 	
 </a>

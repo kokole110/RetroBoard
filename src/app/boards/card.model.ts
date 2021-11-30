@@ -1,3 +1,3 @@
 export class Card {
-	constructor (public text: string, public colorStyle?: string) {}
+	constructor (public text: string, public createdBy: string) {}
 }

@@ -1,3 +1,7 @@
+.delete-btn {
+	text-align: right;
+	margin-bottom: -50px;
+}
 .card-header {
 	display: flex;
 }
