@@ -36,19 +36,20 @@ export class BoardColumnComponent implements OnInit {
         this.boardId = +params['id'];
       }
     )
-    //this.bgColor = this.column.style
   }
 
   onAddCard() {
     this.isEditableCard = true;
     console.log(this.authService.userName)
-    const newCard: Card = new Card('', this.authService.userName);
+    const newCard: Card = new Card('', this.authService.userName, 0, '');
     this.column.cards.push(newCard);
     console.log(newCard)
   }
 
   onDeleteColumn() {
-    //this.deleteColEvent.emit(id)
+    const boardId = this.boardService.getBoard(this.boardId).boardId
+    this.boardService.getBoard(this.boardId).cardsNum -= this.column.cards.length;
+    this.boardService.updateBoard(boardId, this.boardService.getBoard(this.boardId).cardsNum)
     const boardDbId = this.boardService.getBoard(this.boardId).boardId
     this.boardService.deleteColumn(this.boardId, this.index, boardDbId, this.column.id)
   }

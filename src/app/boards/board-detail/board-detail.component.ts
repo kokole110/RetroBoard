@@ -29,7 +29,8 @@ export class BoardDetailComponent implements OnInit {
     description: '',
     date: new Date(),
     columns: [],
-    boardId: ''
+    boardId: '',
+    cardsNum: 0
   };
   
   id: number = 0;
@@ -54,18 +55,14 @@ export class BoardDetailComponent implements OnInit {
   }
 
   onDeleteBoard() {
-    this.boardService.deleteBoard(this.id, this.board.boardId)
+    if (confirm('Are you sure to delete ' + this.board.name + ' board?')) {
+      this.boardService.deleteBoard(this.id, this.board.boardId)
+    }
   }
 
   onAddColumn() {
-
     this.addColumnMode = true;
   }
-
-  // deleteColumn(id: number) {
-  //   this.board.columns.splice(id, 1);
-  //   deleteDoc(doc(this.afs, "columns", "DC"))
-  // }
 
   onSubmit(form: NgForm) {
     this.bgColor = this.colorPickService.color;
@@ -74,21 +71,6 @@ export class BoardDetailComponent implements OnInit {
     const boardId = this.id;
     this.boardService.addColumn(boardDbId, columnName, boardId, this.bgColor);
     this.addColumnMode = false;
-
-    // addDoc(collection(this.afs, "columns"), {
-    //   boardId: this.board.boardId, 
-    //   colName: columnName,
-    // }).then((respData)=>{
-    //   const newColumn: Column = new Column(columnName, [], respData.id);
-    //     this.board.columns.push(newColumn);
-    //     this.addColumnMode = false;
-    // })
-
-    //this.boardService.addColumnToBoard(this.board.boardId, columnName);
-    // const boardRef = doc(this.afs, "boards", this.board.boardId);
-    // updateDoc(boardRef, {
-    //   columns: arrayUnion({colName: form.value.colName})
-    // })
   }
 
   onCancel() {

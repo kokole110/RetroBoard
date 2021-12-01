@@ -22,17 +22,12 @@ export class BoardAddComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    // const newBoard = new Board(
-    //   form.value.name,
-    //   form.value.description,
-    //   new Date(),
-    //   []
-    // )
     addDoc(collection(this.afs, "boards"), {
       name: form.value.name,
       description: form.value.description,
       createdDate: new Date(),
-      columns: []
+      columns: [],
+      cardsNum: 0
     }).then(respData => {
       console.log(respData.id)
       const newBoard = new Board(
@@ -40,7 +35,8 @@ export class BoardAddComponent implements OnInit {
         form.value.description,
         new Date(),
         [],
-        respData.id
+        respData.id,
+        0
       )
 
       this.boardService.addBoard(newBoard);

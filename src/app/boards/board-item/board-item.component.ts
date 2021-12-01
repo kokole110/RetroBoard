@@ -17,7 +17,8 @@ export class BoardItemComponent implements OnInit {
     description: '',
     date: new Date(),
     columns: [],
-    boardId: ''
+    boardId: '',
+    cardsNum: 0
   };
   @Input() index: number | null = null;
 

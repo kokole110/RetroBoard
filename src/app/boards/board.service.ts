@@ -42,15 +42,16 @@ export class BoardService {
       new Date(),
       [
         new Column('Went well', [
-            new Card('First card of first column', ''),
-            new Card('Second card of first column', '')
+            new Card('First card of first column', '', 0, ''),
+            new Card('Second card of first column', '', 0, '')
           ],'', '#365a37'),
         new Column('Second Went well', [
-            new Card('First card of second column', ''),
-            new Card('Second card of second column', '')
+            new Card('First card of second column', '', 0, ''),
+            new Card('Second card of second column', '', 0, '')
           ],'', '#843043'),
       ],
-      ''
+      '',
+      4
     ),
     new Board(
       'Second Test RetroBoard', 
@@ -59,7 +60,8 @@ export class BoardService {
       [
         new Column('Second Went well', [],'','#843043')
       ],
-      ''
+      '',
+      0
     ),
     new Board(
       'Third Test RetroBoard', 
@@ -68,7 +70,8 @@ export class BoardService {
       [
         new Column('Third Went well', [],'','#843043'),
       ],
-      ''
+      '',
+      0
     ),
   ];
 
@@ -79,20 +82,16 @@ export class BoardService {
     return this.boards[id]
   }
 
-  // getCardsNumFromDb(boardId: string): Observable<number> {
-  //   const columnsOfBoard = query(collection(this.afs, "columns"), where("boardId", "==", boardId))
-  //   getDocs(columnsOfBoard).then(querySnapshot => {
-  //     querySnapshot.forEach(column => {
-  //       console.log(column.data().cards.length)
-  //       this.num += column.data().cards.length;
-  //     })
-  //   });
-  //   return this.num; 
-  // }
-
   addBoard(newBoard: Board) {
     this.boards.push(newBoard);
     this.boardsChanged.next(this.boards.slice());
+  }
+
+  updateBoard(id: string, cardsNum: number) {
+    const boardRef = doc(this.afs, "boards", id);
+    updateDoc(boardRef, {
+      cardsNum: cardsNum,
+    })
   }
 
   deleteBoard(id: number, boardId: string) {
@@ -125,17 +124,27 @@ export class BoardService {
     deleteDoc(doc(this.afs, "columns", colDbId))
   }
 
-  addCardToDbColumn(columnId: string, text: string, userName: string) {
+  addCardToDbColumn(
+    columnId: string, 
+    text: string, 
+    userName: string,
+    likeCount: number, 
+    likedBy: string) {
     const columnRef = doc(this.afs, "columns", columnId);
     updateDoc(columnRef, {
-      cards: arrayUnion({text: text, createdBy: userName}),
+      cards: arrayUnion({text: text, createdBy: userName, likeCount: likeCount, likedBy: likedBy}),
     })
   }  
 
-  deleteCard(columnId: string, text: string) {
+  deleteCard(
+    columnId: string, 
+    text: string, 
+    createdBy: string, 
+    likeCount: number, 
+    likedBy: string) {
     const columnRef = doc(this.afs, "columns", columnId);
     updateDoc(columnRef, {
-      cards: arrayRemove(text)
+      cards: arrayRemove({text: text, createdBy: createdBy, likeCount: likeCount, likedBy: likedBy})
     });
   }
 
@@ -149,7 +158,8 @@ export class BoardService {
           board.data().description,
           (board.data().createdDate.toDate()).toDateString(),              
           [],
-          boardId
+          boardId,
+          board.data().cardsNum
           )
         this.boards.push(newBoard)
       })
@@ -163,15 +173,33 @@ export class BoardService {
     const dbColumns = query(collection(this.afs, "columns"), where("boardId", "==", board.boardId));
     getDocs(dbColumns).then(columnsSnapshot => {
       columnsSnapshot.forEach(column => {
+        console.log(column.ref)
         let newColumn = new Column(
           column.data().colName, 
           column.data().cards || [], 
-          board.boardId,
+          column.ref.id,
           column.data().style
         )
         board.columns.push(newColumn)
       })
       console.log(board.columns);
+    })
+  }
+
+  saveLikesToDb(
+    columnId: string, 
+    text: string, 
+    createdBy: string, 
+    likeCount: number, 
+    likeCountPrev: number,
+    likedBy: string,
+    likedByPrev: string) {
+    const columnRef = doc(this.afs, "columns", columnId);
+    updateDoc(columnRef, {
+      cards: arrayRemove({text: text, createdBy: createdBy, likeCount: likeCountPrev, likedBy: likedByPrev}),
+    })
+    updateDoc(columnRef, {
+      cards: arrayUnion({text: text, createdBy: createdBy, likeCount: likeCount, likedBy: likedBy}),
     })
   }
 
