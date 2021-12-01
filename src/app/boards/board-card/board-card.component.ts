@@ -16,7 +16,7 @@ import { Column } from '../column.model';
 export class BoardCardComponent implements OnInit {
 
   @ViewChild('el', {static: true}) cardEl:ElementRef = {} as ElementRef;
-  @Input() card: Card = new Card('', '', '', 0, '', false)
+  @Input() card: Card = new Card('', '', '', 0, [], false)
   @Input() column: Column = new Column('',[],'','');
   @Input() cardIndex: number = 0;
   
@@ -24,14 +24,7 @@ export class BoardCardComponent implements OnInit {
   isLiked: boolean = false;
   id: number = 0; //board id retrieved from url params
   userName:string = '';
-  board: Board = {
-    name: '', 
-    description: '',
-    date: new Date(),
-    columns: [],
-    boardId: '',
-    cardsNum: 0
-  };
+  board: Board = new Board('', '', new Date(), [], '', 0);
   
   constructor(public colorPickService: ColorPickService,
     private boardService: BoardService,
@@ -53,9 +46,14 @@ export class BoardCardComponent implements OnInit {
       this.cardEl.nativeElement.contentEditable = true;
       this.cardEl.nativeElement.focus();
     }
-    if (this.card.likedBy === this.authService.userId) {
+    for (let userId of this.card.likedBy) {
+      if (userId === this.authService.userId) {
         this.isLiked = true;
+      }
     }
+    // if (this.card.likedBy === this.authService.userId) {
+    //     this.isLiked = true;
+    // }
   }
 
   onSubmit() { //create card and add it to DB 'cards' collection
@@ -79,26 +77,20 @@ export class BoardCardComponent implements OnInit {
   }
 
   onLikeCounter() {
-    let likeCountPrev: number = this.card.likeCount;
-    let likedByPrev: string = this.card.likedBy
     if (!this.isLiked) {
       this.isLiked = true;
       this.card.likeCount++;
-      this.card.likedBy = this.authService.userId
+      this.card.likedBy.push(this.authService.userId);
+      this.boardService.saveLikeToDb(this.card.cardId, this.card.likeCount, this.authService.userId);
+
     } else {
       this.isLiked = false;
       this.card.likeCount--;
-      this.card.likedBy = '';
+      const likeId = this.card.likedBy.indexOf(this.authService.userId)
+      this.card.likedBy.slice(likeId, 1);
+      this.boardService.removeLikeFromDb(this.card.cardId, this.card.likeCount, this.authService.userId);
     }
 
-    this.boardService.saveLikesToDb(
-      this.column.id, 
-      this.card.text, 
-      this.card.creatorName, 
-      this.card.likeCount, 
-      likeCountPrev,
-      this.card.likedBy,
-      likedByPrev);
   }
 
 }

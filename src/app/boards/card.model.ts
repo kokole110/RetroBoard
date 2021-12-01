@@ -4,7 +4,7 @@ export class Card {
 		public text: string, 
 		public creatorName: string,
 		public likeCount: number,
-		public likedBy: string,
+		public likedBy: string[],
 		public allowEdit: boolean,
 		) {}
 }

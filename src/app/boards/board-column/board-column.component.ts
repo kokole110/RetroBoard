@@ -54,7 +54,7 @@ export class BoardColumnComponent implements OnInit {
         '', 
         this.authService.userName, 
         0, 
-        '',
+        [],
         true);
       this.column.cards.push(newCard);
       this.board.cardsNum ++;

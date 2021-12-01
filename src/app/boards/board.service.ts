@@ -43,12 +43,12 @@ export class BoardService {
       new Date(),
       [
         new Column('Went well', [
-            new Card('', 'First card of first column', '', 0, '', false),
-            new Card('', 'Second card of first column', '', 0, '', false)
+            new Card('', 'First card of first column', '', 0, [], false),
+            new Card('', 'Second card of first column', '', 0, [], false)
           ],'', '#365a37'),
         new Column('Second Went well', [
-            new Card('', 'First card of second column', '', 0, '', false),
-            new Card('', 'Second card of second column', '', 0, '', false)
+            new Card('', 'First card of second column', '', 0, [], false),
+            new Card('', 'Second card of second column', '', 0, [], false)
           ],'', '#843043'),
       ],
       '',
@@ -251,20 +251,27 @@ export class BoardService {
     })
   }
 
-  saveLikesToDb(
-    columnId: string, 
-    text: string, 
-    createdBy: string, 
+  saveLikeToDb(
+    cardId: string, 
     likeCount: number, 
-    likeCountPrev: number,
-    likedBy: string,
-    likedByPrev: string) {
-    const columnRef = doc(this.afs, "columns", columnId);
-    updateDoc(columnRef, {
-      cards: arrayRemove({text: text, createdBy: createdBy, likeCount: likeCountPrev, likedBy: likedByPrev}),
+    userId: string) 
+  {
+    const cardRef = doc(this.afs, "cards", cardId);
+    updateDoc(cardRef, {
+      likeCount: likeCount,
+      likedBy: arrayUnion(userId), 
     })
-    updateDoc(columnRef, {
-      cards: arrayUnion({text: text, createdBy: createdBy, likeCount: likeCount, likedBy: likedBy}),
+  }
+
+  removeLikeFromDb(
+    cardId: string, 
+    likeCount: number, 
+    userId: string) 
+  {
+    const cardRef = doc(this.afs, "cards", cardId);
+    updateDoc(cardRef, {
+      likeCount: likeCount,
+      likedBy: arrayRemove(userId), 
     })
   }
 
