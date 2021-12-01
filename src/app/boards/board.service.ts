@@ -8,6 +8,7 @@ import { Card } from './card.model';
 
 import { 
   Firestore,
+  DocumentReference,
   doc,
   setDoc,
   collection, 
@@ -42,12 +43,12 @@ export class BoardService {
       new Date(),
       [
         new Column('Went well', [
-            new Card('First card of first column', '', 0, ''),
-            new Card('Second card of first column', '', 0, '')
+            new Card('', 'First card of first column', '', 0, '', false),
+            new Card('', 'Second card of first column', '', 0, '', false)
           ],'', '#365a37'),
         new Column('Second Went well', [
-            new Card('First card of second column', '', 0, ''),
-            new Card('Second card of second column', '', 0, '')
+            new Card('', 'First card of second column', '', 0, '', false),
+            new Card('', 'Second card of second column', '', 0, '', false)
           ],'', '#843043'),
       ],
       '',
@@ -106,6 +107,12 @@ export class BoardService {
         deleteDoc(docEl.ref)
       })
     });
+    const cardsOfBoard = query(collection(this.afs, "cards"), where("boardId", "==", boardId))
+    getDocs(cardsOfBoard).then(cardsSnapshot => {
+      cardsSnapshot.forEach(card => {
+        deleteDoc(card.ref)
+      })
+    });
   }
 
   addColumn(boardDbId: string, columnName: string, boardId: number, bgColor: string) {
@@ -121,31 +128,73 @@ export class BoardService {
 
   deleteColumn(boardId: number, colId: number, boardDbId: string, colDbId: string) {
     this.getBoard(boardId).columns.splice(colId, 1);
-    deleteDoc(doc(this.afs, "columns", colDbId))
+
+    deleteDoc(doc(this.afs, "columns", colDbId));
+    const cardsOfColumn = query(collection(this.afs, "cards"), where("columnId", "==", colDbId))
+    getDocs(cardsOfColumn).then(cardsSnapshot => {
+      cardsSnapshot.forEach(card => {
+        deleteDoc(card.ref)
+      })
+    });
   }
 
-  addCardToDbColumn(
+  updateColumnWithAddingCard(columnId: string, cardId: string) {
+    const columnRef = doc(this.afs, "columns", columnId);
+    updateDoc(columnRef, {
+      cards: arrayUnion(cardId)
+    })
+  }
+
+  updateColumnWithDeletingCard(columnId: string, cardId: string) {
+    const columnRef = doc(this.afs, "columns", columnId);
+    updateDoc(columnRef, {
+      cards: arrayRemove(cardId)
+    })
+  }
+  
+  addCardTemplate(
+    userId: string,
     columnId: string, 
+    boardId: string,
     text: string, 
     userName: string,
     likeCount: number, 
-    likedBy: string) {
-    const columnRef = doc(this.afs, "columns", columnId);
-    updateDoc(columnRef, {
-      cards: arrayUnion({text: text, createdBy: userName, likeCount: likeCount, likedBy: likedBy}),
+    likedBy: string,
+    allowEdit: boolean,
+    columnCards: Card[]): Promise<DocumentReference> {
+    return addDoc(collection(this.afs, "cards"), {
+      createdBy: userId, 
+      creatorName: userName,
+      columnId: columnId,
+      boardId: boardId,
+      text: text,
+      likeCount: likeCount,
+      likedBy: likedBy,
+      allowEdit: allowEdit
     })
-  }  
+    // .then((respData)=>{
+    //   const newCard: Card = new Card(respData.id, text, userName, likeCount, likedBy);
+    //   columnCards.push(newCard);
+    //   this.updateColumn(columnId, respData.id)
+    //   console.log(newCard);
+    //   console.log(columnCards);
+    // })
+  }
 
-  deleteCard(
-    columnId: string, 
+  updateCardText(
+    cardId: string, 
     text: string, 
-    createdBy: string, 
-    likeCount: number, 
-    likedBy: string) {
-    const columnRef = doc(this.afs, "columns", columnId);
-    updateDoc(columnRef, {
-      cards: arrayRemove({text: text, createdBy: createdBy, likeCount: likeCount, likedBy: likedBy})
-    });
+    allowEdit: boolean
+    ) {
+    const cardRef = doc(this.afs, "cards", cardId);
+    updateDoc(cardRef, {
+      text: text,
+      allowEdit: allowEdit
+    })
+  }
+
+  deleteCard(cardId: string) {
+    deleteDoc(doc(this.afs, "cards", cardId))
   }
 
   fetchBoards() {
@@ -176,10 +225,26 @@ export class BoardService {
         console.log(column.ref)
         let newColumn = new Column(
           column.data().colName, 
-          column.data().cards || [], 
+          [], 
           column.ref.id,
           column.data().style
         )
+        const cards = column.data().cards
+        for (let cardId of cards) {
+          const cardRef = doc(this.afs, "cards", cardId);
+          getDoc(cardRef).then(card => {
+            if (card.exists()) {
+              newColumn.cards.push(new Card(
+              card.ref.id, 
+              card.data().text,
+              card.data().creatorName,
+              card.data().likeCount,
+              card.data().likedBy,
+              card.data().allowEdit
+              ))
+            }    
+          })
+        }
         board.columns.push(newColumn)
       })
       console.log(board.columns);

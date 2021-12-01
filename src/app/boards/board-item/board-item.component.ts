@@ -25,19 +25,18 @@ export class BoardItemComponent implements OnInit {
   constructor(private boardService: BoardService) { }
 
   ngOnInit(): void {
-    this.getCardsNum()
+    // this.board.cardsNum = this.getCardsNum()
+    // console.log(this.board.cardsNum)
   }
 
   getCardsNum() {
+    let cardsNum = 0;
     for (let col of this.board.columns) {
-      if (col.cards) {
-        this.cardsNum += col.cards.length
+      if (col.cards.length) {
+        cardsNum += col.cards.length
       }
     }
-    return this.cardsNum;
-    // this.boardService.getCardsNumFromDb(this.board.boardId).subscribe(resp => {
-    //   console.log(resp)
-    // }, error => console.log(error))
+    return cardsNum;
   }
 
   onFetchColumns() {

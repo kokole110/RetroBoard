@@ -20,10 +20,7 @@
 			*ngFor="let cardEl of column.cards; let i = index"
 			[cardIndex]="i"
 			[card]="cardEl"
-			[columnId]="column.id"
-			[columnStyle]="column.style"
-			(deleteCardEvent)="deleteCard($event)"
-			[allowEdit]="isEditableCard"
+			[column] = "column"			
 		></app-board-card>
 	</div>
 </div>

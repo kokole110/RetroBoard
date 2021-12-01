@@ -1,4 +1,4 @@
-<div class="card" [ngStyle]="{'background-color': this.columnStyle}">
+<div class="card" [ngStyle]="{'background-color': this.column.style}">
 	<div class="row" style="margin-bottom: 10px;">
 		<div class="col-xs-10">
 			<div #el contenteditable="false">{{ this.card.text }}</div>
@@ -14,10 +14,10 @@
 			</a>
 		</div> -->
 	</div>
-	<div class="row" *ngIf="allowEdit">
+	<div class="row" *ngIf="this.card.allowEdit">
 		<div class="col-xs-12">
 			<button type="button" (click)="onSubmit()">&#10004;</button>
-			<button type="button" (click)="onCancel(this.cardIndex)">&#10006;</button>
+			<button type="button" (click)="onDeleteCard()">&#10006;</button>
 		</div>
 	</div>
 

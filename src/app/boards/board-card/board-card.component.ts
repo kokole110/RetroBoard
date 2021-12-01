@@ -6,6 +6,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Card } from '../card.model'
 import { ColorPickService } from '../color-pick.service';
 import { Board } from '../board.model';
+import { Column } from '../column.model';
 
 @Component({
   selector: 'app-board-card',
@@ -15,17 +16,14 @@ import { Board } from '../board.model';
 export class BoardCardComponent implements OnInit {
 
   @ViewChild('el', {static: true}) cardEl:ElementRef = {} as ElementRef;
-  @Input() card: Card = new Card('', '', 0, '')
-  @Input() columnId: string = '';
-  @Input() columnStyle: string = '';
+  @Input() card: Card = new Card('', '', '', 0, '', false)
+  @Input() column: Column = new Column('',[],'','');
   @Input() cardIndex: number = 0;
-  @Input() allowEdit: boolean = false;
-  @Output() deleteCardEvent = new EventEmitter<number>()
-
+  
+  
   isLiked: boolean = false;
-  //likeCount: number = 0;
-  id: number = 0;
-  userName:string = ''
+  id: number = 0; //board id retrieved from url params
+  userName:string = '';
   board: Board = {
     name: '', 
     description: '',
@@ -34,7 +32,7 @@ export class BoardCardComponent implements OnInit {
     boardId: '',
     cardsNum: 0
   };
-
+  
   constructor(public colorPickService: ColorPickService,
     private boardService: BoardService,
     private route: ActivatedRoute, 
@@ -42,7 +40,6 @@ export class BoardCardComponent implements OnInit {
     public authService: AuthService) { }
 
   ngOnInit(): void {
-    console.log(this.card)
     this.route.params.subscribe(
       (params: Params) => {
         this.id = +params['id'];
@@ -50,55 +47,35 @@ export class BoardCardComponent implements OnInit {
       }
     )
 
-    if (this.allowEdit) {
+    this.userName = this.card.creatorName;
+
+    if (this.card.allowEdit) {
       this.cardEl.nativeElement.contentEditable = true;
       this.cardEl.nativeElement.focus();
     }
-
-    this.cardEl.nativeElement.innerText = this.card.text || '';
-    this.userName = this.card.createdBy;
-
     if (this.card.likedBy === this.authService.userId) {
         this.isLiked = true;
     }
-    console.log(this.userName)
   }
 
-  onSubmit() {
+  onSubmit() { //create card and add it to DB 'cards' collection
     if (this.cardEl.nativeElement.innerText.length == 0) {
-      this.onCancel(this.cardIndex)
+      this.onDeleteCard();
     } else {
-      this.board.cardsNum++;
-      this.boardService.updateBoard(this.board.boardId, this.board.cardsNum)
-      this.cardEl.nativeElement.contentEditable = false;
       this.card.text = this.cardEl.nativeElement.innerText;
-      this.boardService.addCardToDbColumn(
-        this.columnId, 
-        this.card.text, 
-        this.authService.userName,
-        this.card.likeCount,
-        this.card.likedBy)
-      this.allowEdit = false;
+      this.cardEl.nativeElement.innerText = this.card.text;
+      this.cardEl.nativeElement.contentEditable = false;
+      this.card.allowEdit = false;
+      this.boardService.updateCardText(this.card.cardId, this.card.text, this.card.allowEdit);
     }
   }
 
   onDeleteCard() {
-    if (this.card.text) {
-      this.board.cardsNum--;
-      this.boardService.updateBoard(this.board.boardId, this.board.cardsNum)
-      this.boardService.deleteCard(
-        this.columnId, 
-        this.card.text, 
-        this.card.createdBy,
-        this.card.likeCount,
-        this.card.likedBy);
-      console.log(this.card.text)
-    }
-    this.onCancel(this.cardIndex)
-  }
-
-  onCancel(id: number) {
-    this.deleteCardEvent.emit(id);
+    this.column.cards.splice(this.cardIndex, 1)
+    this.board.cardsNum--;
+    this.boardService.updateBoard(this.board.boardId, this.board.cardsNum)
+    this.boardService.deleteCard(this.card.cardId);
+    this.boardService.updateColumnWithDeletingCard(this.column.id, this.card.cardId)
   }
 
   onLikeCounter() {
@@ -115,9 +92,9 @@ export class BoardCardComponent implements OnInit {
     }
 
     this.boardService.saveLikesToDb(
-      this.columnId, 
+      this.column.id, 
       this.card.text, 
-      this.card.createdBy, 
+      this.card.creatorName, 
       this.card.likeCount, 
       likeCountPrev,
       this.card.likedBy,
