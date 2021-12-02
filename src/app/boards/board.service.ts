@@ -217,7 +217,6 @@ export class BoardService {
           )
         this.boards.push(newBoard)
       })
-      console.log(this.boards);
     });
     this.boardsChanged.next(this.boards);
     this.boardsIsFetched = true;
@@ -227,7 +226,6 @@ export class BoardService {
     const dbColumns = query(collection(this.afs, "columns"), where("boardId", "==", board.boardId));
     getDocs(dbColumns).then(columnsSnapshot => {
       columnsSnapshot.forEach(column => {
-        console.log(column.ref)
         let newColumn = new Column(
           column.data().colName, 
           [], 
@@ -253,7 +251,6 @@ export class BoardService {
         }
         board.columns.push(newColumn)
       })
-      console.log(board.columns);
     })
   }
 
@@ -291,21 +288,4 @@ export class BoardService {
       }), 
     })
   }
-
-  // getUserNameFromDb(columnId: string, text: string) {
-  //   const columnRef = doc(this.afs, "columns", columnId);
-  //   getDoc(columnRef).then(columnData => {
-  //     if (columnData.exists()) {
-  //       console.log("Document data:", columnData.data());
-  //       for (let card of columnData.data().cards) {
-  //         if (card.text === text) {
-  //           return card.createdBy;
-  //           break;
-  //         }
-  //       }
-  //     } else {
-  //       console.log("No such document!");
-  //     }
-  //   })   
-  // }
 }

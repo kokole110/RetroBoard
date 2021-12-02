@@ -22,7 +22,6 @@ export class BoardsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription = this.boardService.boardsChanged
       .subscribe((boards) => {
-        console.log(boards)
         this.boards = boards;
       })
     this.boards = this.boardService.getBoards();
@@ -41,9 +40,4 @@ export class BoardsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe()
   }
-
-  // onFetchBoards() {
-  //   this.boardService.fetchBoards()
-  // }
-
 }

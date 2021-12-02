@@ -59,10 +59,7 @@ export class BoardCardComponent implements OnInit {
       if (userId === this.authService.userId) {
         this.isLiked = true;
       }
-    }
-    if (this.isCommentsOpen) {
-      console.log(this.addCommentDiv.nativeElement)
-    }    
+    }   
   }
 
   onSubmit() { //create card and add it to DB 'cards' collection
@@ -114,8 +111,6 @@ export class BoardCardComponent implements OnInit {
   onFocusOut() {
     if (!this.addCommentDiv.nativeElement.innerText.length) {
       this.addCommentDiv.nativeElement.innerText = 'Add comment here...';
-    } else {
-      console.log(this.addCommentDiv.nativeElement.innerText)
     }
   }
 

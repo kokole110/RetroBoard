@@ -25,8 +25,6 @@ export class BoardItemComponent implements OnInit {
   constructor(private boardService: BoardService) { }
 
   ngOnInit(): void {
-    // this.board.cardsNum = this.getCardsNum()
-    // console.log(this.board.cardsNum)
   }
 
   getCardsNum() {
