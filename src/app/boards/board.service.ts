@@ -5,6 +5,7 @@ import { Subject, Observable } from 'rxjs';
 import { Board } from './board.model';
 import { Column } from './column.model';
 import { Card } from './card.model';
+import { Comment } from './comment.model';
 
 import { 
   Firestore,
@@ -35,46 +36,49 @@ export class BoardService {
   boardsChanged = new Subject<Board[]>();
   columsIsFetched = false;
   boardsIsFetched = false;
-  //private boards: Board[] = [];
-  private boards: Board[] = [
-    new Board(
-      'Test RetroBoard', 
-      'Test retroboard description here', 
-      new Date(),
-      [
-        new Column('Went well', [
-            new Card('', 'First card of first column', '', 0, [], false),
-            new Card('', 'Second card of first column', '', 0, [], false)
-          ],'', '#365a37'),
-        new Column('Second Went well', [
-            new Card('', 'First card of second column', '', 0, [], false),
-            new Card('', 'Second card of second column', '', 0, [], false)
-          ],'', '#843043'),
-      ],
-      '',
-      4
-    ),
-    new Board(
-      'Second Test RetroBoard', 
-      'Second Test retroboard description here', 
-      new Date(),
-      [
-        new Column('Second Went well', [],'','#843043')
-      ],
-      '',
-      0
-    ),
-    new Board(
-      'Third Test RetroBoard', 
-      'Third Test retroboard description here', 
-      new Date(),
-      [
-        new Column('Third Went well', [],'','#843043'),
-      ],
-      '',
-      0
-    ),
-  ];
+  private boards: Board[] = [];
+  // private boards: Board[] = [
+  //   new Board(
+  //     'Test RetroBoard', 
+  //     'Test retroboard description here', 
+  //     new Date(),
+  //     [
+  //       new Column('Went well', [
+  //           new Card('', 'First card of first column', '', 0, [], false, [
+  //             new Comment('Oksa', '', 'Some comment by Oksa'),
+  //             new Comment('Roksa', '', 'Somebody else wrote a comment'),
+  //             ]),
+  //           new Card('', 'Second card of first column', '', 0, [], false, [])
+  //         ],'', '#365a37'),
+  //       new Column('Second Went well', [
+  //           new Card('', 'First card of second column', '', 0, [], false, []),
+  //           new Card('', 'Second card of second column', '', 0, [], false, [])
+  //         ],'', '#843043'),
+  //     ],
+  //     '',
+  //     4
+  //   ),
+  //   new Board(
+  //     'Second Test RetroBoard', 
+  //     'Second Test retroboard description here', 
+  //     new Date(),
+  //     [
+  //       new Column('Second Went well', [],'','#843043')
+  //     ],
+  //     '',
+  //     0
+  //   ),
+  //   new Board(
+  //     'Third Test RetroBoard', 
+  //     'Third Test retroboard description here', 
+  //     new Date(),
+  //     [
+  //       new Column('Third Went well', [],'','#843043'),
+  //     ],
+  //     '',
+  //     0
+  //   ),
+  // ];
 
   getBoards() {
     return this.boards.slice();
@@ -161,7 +165,7 @@ export class BoardService {
     likeCount: number, 
     likedBy: string,
     allowEdit: boolean,
-    columnCards: Card[]): Promise<DocumentReference> {
+    comments: Comment[]): Promise<DocumentReference> {
     return addDoc(collection(this.afs, "cards"), {
       createdBy: userId, 
       creatorName: userName,
@@ -170,7 +174,8 @@ export class BoardService {
       text: text,
       likeCount: likeCount,
       likedBy: likedBy,
-      allowEdit: allowEdit
+      allowEdit: allowEdit,
+      comments: comments
     })
     // .then((respData)=>{
     //   const newCard: Card = new Card(respData.id, text, userName, likeCount, likedBy);
@@ -240,7 +245,8 @@ export class BoardService {
               card.data().creatorName,
               card.data().likeCount,
               card.data().likedBy,
-              card.data().allowEdit
+              card.data().allowEdit,
+              card.data().comments
               ))
             }    
           })
@@ -272,6 +278,17 @@ export class BoardService {
     updateDoc(cardRef, {
       likeCount: likeCount,
       likedBy: arrayRemove(userId), 
+    })
+  }
+
+  addComment(cardId: string, userName: string, userId: string, comment: string) {
+    const cardRef = doc(this.afs, "cards", cardId);
+    updateDoc(cardRef, {
+      comments: arrayUnion({
+        creatorName: userName,
+        creatorId: userId,
+        text: comment
+      }), 
     })
   }
 

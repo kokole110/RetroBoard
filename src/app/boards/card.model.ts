@@ -1,3 +1,5 @@
+import { Comment } from './comment.model';
+
 export class Card {
 	constructor (
 		public cardId: string,
@@ -6,5 +8,6 @@ export class Card {
 		public likeCount: number,
 		public likedBy: string[],
 		public allowEdit: boolean,
+		public comments: Comment[]
 		) {}
 }

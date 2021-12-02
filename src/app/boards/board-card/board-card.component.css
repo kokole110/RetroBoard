@@ -38,3 +38,25 @@ button {
 .cancel-btn {
 	padding: 0 5px;
 }
+
+.add-comment {
+	margin: 10px 0;
+	position: relative;
+}
+
+.add-comment a {
+	cursor: pointer;
+    position: absolute;
+    bottom: 3px;
+    right: 25px;
+}
+
+.add-comment div {
+	min-height: 60px;
+    padding-bottom: 30px;
+    color: #a7a7a7;
+}
+
+.add-comment div[contenteditable] {
+	cursor: text;
+}

@@ -47,7 +47,7 @@ export class BoardColumnComponent implements OnInit {
       0,
       '',
       false,
-      this.column.cards
+      []
     ).then((respData)=>{
       const newCard: Card = new Card(
         respData.id, 
@@ -55,7 +55,8 @@ export class BoardColumnComponent implements OnInit {
         this.authService.userName, 
         0, 
         [],
-        true);
+        true,
+        []);
       this.column.cards.push(newCard);
       this.board.cardsNum ++;
       this.boardService.updateBoard(this.board.boardId, this.board.cardsNum)

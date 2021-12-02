@@ -20,6 +20,7 @@ import { BoardDetailComponent } from './boards/board-detail/board-detail.compone
 import { BoardColumnComponent } from './boards/board-column/board-column.component';
 import { BoardCardComponent } from './boards/board-card/board-card.component';
 import { BoardAddComponent } from './boards/board-add/board-add.component';
+import { BoardCommentComponent } from './boards/board-comment/board-comment.component';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { BoardAddComponent } from './boards/board-add/board-add.component';
     BoardColumnComponent,
     BoardCardComponent,
     BoardAddComponent,
+    BoardCommentComponent,
   ],
   imports: [
     BrowserModule,
